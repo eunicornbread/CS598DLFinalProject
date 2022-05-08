@@ -1,0 +1,3 @@
+[submodule "mimic-on-spark"]
+	path = mimic-on-spark
+	url = https://github.com/h4ste/mimic-on-spark.git
