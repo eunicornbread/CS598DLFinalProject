@@ -1,6 +1,6 @@
-[submodule "mimic-on-spark"]
-	path = mimic-on-spark
-	url = https://github.com/h4ste/mimic-on-spark.git
 [submodule "pymetamap"]
 	path = pymetamap
 	url = https://github.com/AnthonyMRios/pymetamap.git
+[submodule "mimic-on-spark"]
+	path = mimic-on-spark
+	url = https://github.com/h4ste/mimic-on-spark.git
