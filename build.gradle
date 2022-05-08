@@ -1,0 +1,73 @@
+import java.nio.file.Paths
+
+plugins {
+  id 'scala'
+}
+
+group 'com.github.h4ste'
+
+version '0.1-SNAPSHOT'
+
+
+
+dependencies {
+  // Scala
+  implementation "org.scala-lang:scala-library:2.11.12"
+  implementation "org.scala-lang:scala-reflect:2.11.12"
+  implementation "org.scala-lang:scala-compiler:2.11.12"
+
+  // Spark
+  implementation 'org.apache.spark:spark-sql_2.11:2.4.0'
+  implementation 'org.apache.spark:spark-core_2.11:2.4.0'
+  implementation 'org.apache.spark:spark-hive_2.11:2.4.0'
+  implementation 'info.picocli:picocli:4.1.0'
+  implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
+  implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
+}
+
+repositories {
+    mavenCentral()
+}
+
+createSparkScript('com.github.h4ste.jamia.cli.spark.MimicTableLoader', 'load_mimic_data', 'scripts')
+createSparkScript('com.github.h4ste.jamia.cli.spark.CcsTableLoader', 'load_ccs', 'scripts')
+createSparkScript('com.github.h4ste.jamia.cli.spark.HaAkiExtractor', 'extract_haaki', 'scripts')
+createSparkScript('com.github.h4ste.jamia.cli.spark.HaPiExtractor', 'extract_hapi', 'scripts')
+createSparkScript('com.github.h4ste.jamia.cli.spark.HaAExtractor', 'extract_haa', 'scripts')
+createSparkScript('com.github.h4ste.jamia.cli.spark.CommunityTableGenerator', 'load_community_views', 'scripts')
+createSparkScript('com.github.h4ste.jamia.cli.spark.DemographicsExtractor', 'extract_hadm_demographics', 'scripts')
+
+def createSparkScript(String mainClass, String name, String... folders) {
+
+  jar.doLast({
+    File scriptFolder = Paths.get(projectDir.absolutePath, folders).toFile()
+    scriptFolder.mkdirs()
+
+    String jars = "local:" + sourceSets.main.runtimeClasspath
+      .filter{ it.absolutePath.endsWith("jar") }
+      .collect{ it.absolutePath }
+      .join(",local:")
+
+    String jarPath = jar.archiveFile.get().asFile.absolutePath
+
+    File shellScript = new File(scriptFolder, name + '.sh')
+    shellScript.withPrintWriter {
+      it.println '#!/bin/sh'
+      it.println "spark-submit \\"
+      it.println "  --class ${mainClass} \\"
+      it.println "  \$SPARK_OPTS \\"
+      it.println "  --jars  ${jars} \\"
+      it.println "  ${jarPath} \$*"
+    }
+
+    File batchScript = new File(scriptFolder, name + '.bat')
+    batchScript.withPrintWriter {
+      it.println '@ECHO OFF'
+      it.println "spark-submit ^"
+      it.println "  --class ${mainClass} ^"
+      it.println "  %SPARK_OPTS% ^"
+      it.println "  --jars ${jars} ^"
+      it.println "  ${jarPath} %*"
+    }
+  })
+}
