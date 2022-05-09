@@ -10,8 +10,9 @@ This page will be broken down into the following sections:
 2. [Datasets](#Datasets)
 3. [Installation](#Installation)
 3. [Data Preprocessing](#data-preprocessing)
-4. Running the Model
-5. [References](#References)
+4. [Running the Model](#running-the-model)
+5. [Results & Outputs](#results--outputs)
+6. [References](#References)
 
 
 ## Overview
@@ -41,7 +42,7 @@ Then install all necessary packages required for the project
 pip install -r requirements.txt
 ```
 
-In addition, you need to download `MetaMap Lite` for this project. For more isntructions, see [https://lhncbc.nlm.nih.gov/ii/tools/MetaMap/run-locally/MetaMapLite.html](https://lhncbc.nlm.nih.gov/ii/tools/MetaMap/run-locally/MetaMapLite.html). It is recommended to use MetaMapLite 3.6.2rc6 and 2020AA dataset, since other versions of `MetaMap` or `MetaMap Lite` may not work with `pymetamap`.
+In addition, you need to download `MetaMap Lite` for this project. For more instructions, see [https://lhncbc.nlm.nih.gov/ii/tools/MetaMap/run-locally/MetaMapLite.html](https://lhncbc.nlm.nih.gov/ii/tools/MetaMap/run-locally/MetaMapLite.html). It is recommended to use MetaMapLite 3.6.2rc6 and 2020AA dataset, since other versions of `MetaMap` or `MetaMap Lite` may not work with `pymetamap`.
 
 
 
@@ -94,6 +95,17 @@ python preprocessing.py
 ```
 
 The repo also includes a IPython notebook if one wants to explore the data preprocessing steps in an interactive way. See `preprocessing.ipynb`. 
+
+## Running the Model
+
+To run the CANTRIP model, follow the instructions in the original repo (https://github.com/h4ste/cantrip). 
+
+
+## Results & Outputs
+
+Unfortunately, I was not able to get the CANTRIP model to run to completion, because all the input data I have used (around 2k rows from `NOTEEVENTS.csv`) are filtered out by the algorithm, resulting in the program crashing before it can split out any result. Here is an example output of running the model: 
+
+![Tux, the Linux mascot](./images/run-cantrip.png)
 
 ## References
 
