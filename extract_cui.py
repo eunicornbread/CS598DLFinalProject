@@ -19,6 +19,9 @@ def parse_arguments(parser):
 	    "--noteevents_file", type=str, default='./NOTEEVENTS.csv', help="File path to MIMIC-III dataset NOTEEVENTS.csv"
 	)
     parser.add_argument(
+	    "--output_dir", type=str, default='./output/', help="Path to directory to save all the output files"
+	)
+    parser.add_argument(
     "--metamap_lite_dir", type=str, default=METAMAP_LITE_DIR, help="Directory path to metamap lite"
     )
     parser.add_argument(
@@ -53,7 +56,7 @@ if __name__ == '__main__':
     df = shuffle(df)
     r, _ = df.shape
 
-    df.to_csv("chronologies.csv", index=False)
-    df[:int(0.8 * r)].to_csv("train.chronologies.csv", index=False)
-    df[int(0.8 * r):int(0.9 * r)].to_csv("devel.chronologies.csv", index=False)
-    df[int(0.9 * r):].to_csv("test.chronologies.csv", index=False)
+    df.to_csv(ARGS.output_dir + "chronologies.csv", index=False)
+    df[:int(0.8 * r)].to_csv(ARGS.output_dir + "train.chronologies.csv", index=False)
+    df[int(0.8 * r):int(0.9 * r)].to_csv(ARGS.output_dir + "devel.chronologies.csv", index=False)
+    df[int(0.9 * r):].to_csv(ARGS.output_dir + "test.chronologies.csv", index=False)
