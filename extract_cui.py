@@ -22,10 +22,10 @@ def parse_arguments(parser):
 	    "--output_dir", type=str, default='./output/', help="Path to directory to save all the output files"
 	)
     parser.add_argument(
-    "--metamap_lite_dir", type=str, default=METAMAP_LITE_DIR, help="Directory path to metamap lite"
+        "--metamap_lite_dir", type=str, help="Directory path to metamap lite"
     )
     parser.add_argument(
-    "--max_rows", type=int, default=1000, help="Maximum number of rows to extract"
+        "--max_rows", type=int, default=1000, help="Maximum number of rows to extract"
     )
     args = parser.parse_args()
     return args
