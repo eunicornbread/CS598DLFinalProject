@@ -12,7 +12,8 @@ This page will be broken down into the following sections:
 3. [Data Preprocessing](#data-preprocessing)
 4. [Running the Model](#running-the-model)
 5. [Results & Outputs](#results--outputs)
-6. [References](#References)
+6. [Additional Note on Label Extraction](#results--outputs)
+7. [References](#References)
 
 
 ## Overview
@@ -101,11 +102,48 @@ The repo also includes a IPython notebook if one wants to explore the data prepr
 To run the CANTRIP model, follow the instructions in the original repo (https://github.com/h4ste/cantrip). 
 
 
+
 ## Results & Outputs
 
 Unfortunately, I was not able to get the CANTRIP model to run to completion, because all the input data I have used (around 2k rows from `NOTEEVENTS.csv`) are filtered out by the algorithm, resulting in the program crashing before it can split out any result. Here is an example output of running the model: 
 
-![Tux, the Linux mascot](./images/run-cantrip.png)
+![Example run of CANTRIP model with preprocessed data](./images/run-cantrip.png)
+
+The reason I used only a subset of the whole dataset is because of the limitation of computation power and time constraints. The problem is that `pymetamap` takes quite a while to process each clinical text, on average 3-5 seconds for each one. This significantly limits the size of the datasets I could use without having to wait for hours. Therefore, for future reproduction attempts, I strongly recommend parallelizing the file `extract_cui.py`. 
+
+## Additional Note on Label Extraction
+
+The labels extracted by `preprocessing.py` is for the general problem of mortality prediction. The original authors used code from [mimic-on-spark](https://github.com/h4ste/mimic-on-spark) to extract labels for specific hostpial acquired diseases: hospital acquired acute kidney injury (HAAKI), hospital acquired pressure injury (HAPI), and hospital acquired anemia (HAA). However, the `mimic-on-spark` codebase is currently outdated and broken, failing to produce the results it promises. This repository provides the following updated files to use in lieu of the corresponding files if anyone wants to tackle and debug `mimic-to-spark` to get the scripts to run till completion: 
+
+- `build.gradle`
+- `gradle-wrapper.properties`
+
+Currently the program is able to compile, but it always fails towards the end after taking a couple hours and successfully loading most of `csv` files into the `Spark SQL` database. 
+
+This repo also provides a `Dockerfile` to run `mimic-on-spark` program, since it can be tricky to install the distributed processing platform `Apache Spark` locally. 
+
+To set up the environment for `mimic-on-spark` using `docker`, run the following commands:
+```
+# Build the docker image
+docker build -t spark_docker . 
+
+# Navigate inside mimic-on-spark and run the docker container
+# In terminals other than cmd, may need to replace %cd% with the absolute path
+docker run -it -v %cd%:/my_repo spark_docker bin/bash
+
+# Inside the docker container
+cd my_repo/
+# Install gradle using this link: https://linuxize.com/post/how-to-install-gradle-on-ubuntu-18-04/
+
+# Add the gradle wrapper
+gradle wrapper
+
+# Now we can compile the program with
+./gradlew jar
+
+# Make sure to put the csv files in a data folder and replace build.gradle and gradle-wreapper.properties
+# file since the original ones are outdated and will prevent compiling 
+```
 
 ## References
 
@@ -114,70 +152,8 @@ Goodwin, Travis & Demner-Fushman, Dina. (2020). A customizable deep learning mod
 
 Johnson, A., Pollard, T., Shen, L. et al. MIMIC-III, a freely accessible critical care database. Sci Data 3, 160035 (2016). https://doi.org/10.1038/sdata.2016.35
 
-<!-- docker build -t spark_docker . 
-navigate to folder mimic-on-spark
-(in cmd, in other terminals, need to replace %cd% with the absolute path) docker run -it -v %cd%:/my_repo spark_docker bin/bash
+pymetamap repo: https://github.com/AnthonyMRios/pymetamap
 
+CANTRIP repo: https://github.com/h4ste/cantrip
 
-in the docker container
-cd my_repo/
-install gradle in container
-follow this link: https://linuxize.com/post/how-to-install-gradle-on-ubuntu-18-04/
-
-wget https://services.gradle.org/distributions/gradle-5.0-bin.zip -P /tmp
-sudo unzip -d /opt/gradle /tmp/gradle-*.zip
-ls /opt/gradle/gradle-5.0
-
-vim /etc/profile.d/gradle.sh
-
-paste the following code:
-export GRADLE_HOME=/opt/gradle/gradle-5.0
-export PATH=${GRADLE_HOME}/bin:${PATH}
-
-sudo chmod +x /etc/profile.d/gradle.sh
-source /etc/profile.d/gradle.sh
-
-<!-- verify Gradle is installed properly -->
-<!-- gradle -v -->
-<!-- output -->
-<!-- Welcome to Gradle 5.0!
-
-Here are the highlights of this release:
- - Kotlin DSL 1.0
- - Task timeouts
- - Dependency alignment aka BOM support
- - Interactive `gradle init`
-
-For more details see https://docs.gradle.org/5.0/release-notes.html
-
-
-------------------------------------------------------------
-Gradle 5.0
-------------------------------------------------------------
-
-Build time:   2018-11-26 11:48:43 UTC
-Revision:     7fc6e5abf2fc5fe0824aec8a0f5462664dbcd987
-
-Kotlin DSL:   1.0.4
-Kotlin:       1.3.10
-Groovy:       2.5.4
-Ant:          Apache Ant(TM) version 1.9.13 compiled on July 10 2018
-JVM:          1.8.0_312 (Private Build 25.312-b07)
-OS:           Linux 5.4.72-microsoft-standard-WSL2 amd64
- -->
-
-
-<!-- add the gradle wrapper -->
-<!-- gradle wrapper -->
-<!-- output -->
-<!-- Starting a Gradle Daemon (subsequent builds will be faster)
-
-BUILD SUCCESSFUL in 4s
-1 actionable task: 1 executed -->
-
-<!-- now we can compile following the repo instruction -->
-<!-- ./gradlew jar
-
-put csv files in a data folder
-
-replace build.gradle file and gradle-wreapper.properties file since the original ones are outdated and will prevent compiling --> 
+mimic-on-spark repo: https://github.com/h4ste/mimic-on-spark
